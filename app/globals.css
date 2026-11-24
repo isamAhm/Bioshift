@@ -1330,3 +1330,415 @@ html {
         grid-template-columns: 1fr;
     }
 }
+
+
+.foot {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.foot-emails {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 8px 24px;
+}
+
+.foot-emails a {
+    color: inherit;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.foot-emails a:hover {
+    color: #F5B301;
+}
+
+@media (max-width: 600px) {
+    .foot {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 14px;
+    }
+
+    .foot-emails {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+}
+
+
+/* ==============================
+   FOOTER EMAILS
+================================ */
+
+.foot {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.foot-emails {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 8px 24px;
+}
+
+.foot-emails a {
+    color: inherit;
+    text-decoration: none;
+    transition: color 0.2s ease;
+    overflow-wrap: anywhere;
+}
+
+.foot-emails a:hover {
+    color: #F5B301;
+}
+
+/* ==============================
+   DEMO MODAL OVERLAY
+================================ */
+
+.demo-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background: rgba(5, 18, 32, 0.72);
+    backdrop-filter: blur(7px);
+    -webkit-backdrop-filter: blur(7px);
+    overflow-y: auto;
+}
+
+.demo-modal {
+    position: relative;
+    width: 100%;
+    max-width: 540px;
+    max-height: calc(100vh - 40px);
+    overflow-y: auto;
+    background: #ffffff;
+    color: #0B2239;
+    border-radius: 16px;
+    padding: 36px;
+    box-shadow: 0 24px 80px rgba(0, 0, 0, 0.25);
+    animation: demoModalIn 0.25s ease;
+}
+
+@keyframes demoModalIn {
+    from {
+        opacity: 0;
+        transform: translateY(15px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.demo-close {
+    position: absolute;
+    top: 16px;
+    right: 18px;
+    width: 36px;
+    height: 36px;
+    border: none;
+    border-radius: 50%;
+    background: #f1f5f9;
+    color: #0B2239;
+    font-size: 26px;
+    line-height: 1;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.demo-close:hover {
+    background: #e2e8f0;
+}
+
+.demo-heading {
+    margin-bottom: 25px;
+}
+
+.demo-eyebrow {
+    display: inline-block;
+    margin-bottom: 10px;
+    color: #b88700;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 1.8px;
+}
+
+.demo-heading h2 {
+    margin: 0 0 10px;
+    font-size: 27px;
+    line-height: 1.25;
+    color: #0B2239;
+}
+
+.demo-heading p {
+    margin: 0;
+    color: #64748b;
+    font-size: 14px;
+    line-height: 1.7;
+}
+
+/* ==============================
+   DEMO FORM
+================================ */
+
+.demo-form {
+    display: flex;
+    flex-direction: column;
+    gap: 17px;
+}
+
+.demo-field {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+}
+
+.demo-field label {
+    color: #0B2239;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.demo-field label span {
+    color: #d97706;
+}
+
+.demo-field input,
+.demo-field textarea {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 12px 14px;
+    border: 1px solid #dbe2ea;
+    border-radius: 8px;
+    outline: none;
+    background: #f8fafc;
+    color: #0B2239;
+    font-family: inherit;
+    font-size: 14px;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.demo-field input {
+    min-height: 46px;
+}
+
+.demo-field textarea {
+    min-height: 150px;
+    resize: vertical;
+    line-height: 1.65;
+}
+
+.demo-field input::placeholder,
+.demo-field textarea::placeholder {
+    color: #94a3b8;
+}
+
+.demo-field input:focus,
+.demo-field textarea:focus {
+    border-color: #0B2239;
+    box-shadow: 0 0 0 3px rgba(11, 34, 57, 0.08);
+    background: #ffffff;
+}
+
+.demo-field small {
+    color: #94a3b8;
+    font-size: 11px;
+}
+
+/* Hidden honeypot */
+
+.demo-honeypot {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+/* ==============================
+   SUBMIT BUTTON
+================================ */
+
+.demo-submit {
+    width: 100%;
+    min-height: 48px;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+
+.demo-submit:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+}
+
+.demo-spinner {
+    width: 17px;
+    height: 17px;
+    border: 2px solid rgba(255, 255, 255, 0.4);
+    border-top-color: #ffffff;
+    border-radius: 50%;
+    animation: demoSpin 0.7s linear infinite;
+}
+
+@keyframes demoSpin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.demo-privacy {
+    margin: 0;
+    color: #94a3b8;
+    text-align: center;
+    font-size: 11px;
+    line-height: 1.6;
+}
+
+/* ==============================
+   ERROR MESSAGE
+================================ */
+
+.demo-error {
+    padding: 12px 14px;
+    border: 1px solid #fecaca;
+    border-radius: 8px;
+    background: #fef2f2;
+    color: #b91c1c;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+/* ==============================
+   SUCCESS STATE
+================================ */
+
+.demo-success {
+    padding: 25px 5px;
+    text-align: center;
+}
+
+.success-icon {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 65px;
+    height: 65px;
+    margin: 0 auto 20px;
+    border-radius: 50%;
+    background: #ecfdf5;
+    color: #059669;
+}
+
+.demo-success h2 {
+    margin: 0 0 12px;
+    font-size: 25px;
+}
+
+.demo-success p {
+    margin: 0 auto 25px;
+    max-width: 360px;
+    color: #64748b;
+    font-size: 14px;
+    line-height: 1.7;
+}
+
+/* ==============================
+   RESPONSIVE
+================================ */
+
+@media (max-width: 600px) {
+    .foot {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 14px;
+    }
+
+    .foot-emails {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+
+    .demo-overlay {
+        padding: 12px;
+        align-items: center;
+    }
+
+    .demo-modal {
+        max-height: calc(100vh - 24px);
+        padding: 27px 20px;
+        border-radius: 13px;
+    }
+
+    .demo-heading h2 {
+        font-size: 23px;
+    }
+}
+
+
+.foot {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.foot-emails {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 8px 24px;
+}
+
+.foot-emails a {
+    color: inherit;
+    text-decoration: none;
+    overflow-wrap: anywhere;
+    transition: color 0.2s ease;
+}
+
+.foot-emails a:hover {
+    color: #F5B301;
+}
+
+@media (max-width: 600px) {
+    .foot {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 14px;
+    }
+
+    .foot-emails {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+}
