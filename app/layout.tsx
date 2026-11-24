@@ -1,0 +1,21 @@
+import type { Metadata } from "next";
+import type { ReactNode } from "react";
+import { Newsreader, Public_Sans } from "next/font/google";
+import "./globals.css";
+
+const newsreader = Newsreader({ subsets: ["latin"], variable: "--font-newsreader", display: "swap" });
+const publicSans = Public_Sans({ subsets: ["latin"], variable: "--font-public", display: "swap" });
+
+export const metadata: Metadata = {
+  title: "BioShift | Biometric workforce attendance and time management",
+  description:
+    "BioShift connects ZKTeco fingerprint, face and card terminals to a real-time dashboard so attendance, shifts and leave stay accurate and auditable.",
+};
+
+export default function RootLayout({ children }: { children: ReactNode }) {
+  return (
+    <html lang="en" className={`${newsreader.variable} ${publicSans.variable}`}>
+      <body>{children}</body>
+    </html>
+  );
+}

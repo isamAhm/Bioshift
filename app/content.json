@@ -1,0 +1,199 @@
+{
+  
+
+  "events": [
+    {
+      "time": "07:58",
+      "place": "Main entrance",
+      "method": "Fingerprint",
+      "status": "Verified"
+    },
+    {
+      "time": "08:03",
+      "place": "Warehouse gate",
+      "method": "Face",
+      "status": "Verified"
+    },
+    {
+      "time": "08:14",
+      "place": "Assembly line",
+      "method": "RFID card",
+      "status": "Late"
+    },
+    {
+      "time": "08:21",
+      "place": "Server room",
+      "method": "Card and fingerprint",
+      "status": "Verified"
+    }
+  ],
+  "compare": [
+    {
+      "before": "Hand-entered time sheets bring errors you only find at month end.",
+      "after": "Terminals capture every check-in and calculate hours, overtime and leave automatically."
+    },
+    {
+      "before": "One person can clock in for another.",
+      "after": "Fingerprint, face and card checks tie every event to the right person."
+    },
+    {
+      "before": "Reports arrive days after the pay period closes.",
+      "after": "Managers see live attendance and exceptions as they happen."
+    },
+    {
+      "before": "Audit trails are rebuilt by hand from scattered records.",
+      "after": "Every event is logged, and the full history exports on demand."
+    }
+  ],
+  "features": [
+    {
+      "icon": "fingerprint",
+      "title": "Biometric attendance",
+      "text": "Fingerprint with anti-fake-finger detection, contactless face recognition with liveness checks, and RFID cards on their own or combined for secure areas.",
+      "chips": [
+        "Fingerprint",
+        "Face recognition",
+        "RFID card"
+      ]
+    },
+    {
+      "icon": "monitor",
+      "title": "Real-time dashboard",
+      "text": "Live present and absent counts, department breakdowns and shift filters, with late arrivals and long absences flagged automatically.",
+      "chips": [
+        "Live counts",
+        "Late flags"
+      ]
+    },
+    {
+      "icon": "users",
+      "title": "Employees and shifts",
+      "text": "Guided and bulk biometric enrollment, department hierarchies, rotating shifts, overtime thresholds and break rules.",
+      "chips": [
+        "Day shift",
+        "Night shift",
+        "Rotating",
+        "Overtime rules"
+      ]
+    },
+    {
+      "icon": "bars",
+      "title": "Reports and analytics",
+      "text": "Daily, weekly, monthly and per-employee reports, scheduled by email and exported to Excel, PDF or CSV for payroll.",
+      "chips": [
+        "Excel",
+        "PDF",
+        "CSV"
+      ]
+    },
+    {
+      "icon": "calendar",
+      "title": "Leave workflows",
+      "text": "Requests go to the manager, then HR, and balances update on approval across sick, paid, emergency and other leave types.",
+      "chips": [
+        "Request",
+        "Manager approves",
+        "HR verifies"
+      ]
+    },
+    {
+      "icon": "lock",
+      "title": "Role-based access",
+      "text": "Administrators, HR managers, supervisors and employees each see only what their role requires.",
+      "chips": [
+        "Administrator",
+        "HR manager",
+        "Supervisor",
+        "Employee"
+      ]
+    }
+  ],
+  "reliability": [
+    {
+      "title": "Keeps working offline",
+      "text": "Terminals buffer events locally and sync automatically when the network returns."
+    },
+    {
+      "title": "Encrypted and protected",
+      "text": "Data is encrypted in transit and at rest, with multi-factor authentication for privileged accounts."
+    },
+    {
+      "title": "Complete audit trail",
+      "text": "Every attendance and administrative action is logged and exportable."
+    },
+    {
+      "title": "Connects to your systems",
+      "text": "A RESTful API supports integration with payroll and HR platforms."
+    }
+  ],
+  "phases": [
+    {
+      "weeks": "Weeks 1–2",
+      "title": "Foundation",
+      "text": "Install the terminals, configure the network, migrate employee data and test."
+    },
+    {
+      "weeks": "Weeks 3–4",
+      "title": "Enrollment",
+      "text": "Enroll employees, train administrators, HR and supervisors, and run alongside your current process to confirm accuracy."
+    },
+    {
+      "weeks": "Weeks 5–6",
+      "title": "Go-live",
+      "text": "Switch over fully, retire the manual process and get close support through the transition."
+    }
+  ],
+  "dash": {
+    "side": [
+      "Dashboard",
+      "Employees",
+      "Shifts",
+      "Reports",
+      "Leave"
+    ],
+    "kpis": [
+      {
+        "label": "Present",
+        "value": "184",
+        "tone": "ok"
+      },
+      {
+        "label": "Late",
+        "value": "12",
+        "tone": "late"
+      },
+      {
+        "label": "Absent",
+        "value": "6",
+        "tone": "abs"
+      }
+    ],
+    "bars": [
+      42,
+      64,
+      56,
+      80,
+      72,
+      88,
+      66
+    ]
+  },
+  "flow": [
+    {
+      "title": "Biometric terminals",
+      "text": "ZKTeco XFace Pro and U270, with a local buffer for outages"
+    },
+    {
+      "title": "Application server",
+      "text": "Node.js and Express API with live WebSocket updates"
+    },
+    {
+      "title": "Database",
+      "text": "PostgreSQL with scheduled backups"
+    },
+    {
+      "title": "Web dashboard",
+      "text": "React, in any desktop or mobile browser"
+    }
+  ]
+}
