@@ -1,0 +1,979 @@
+"use client";
+
+import type { ReactNode } from "react";
+import { useEffect, useState } from "react";
+import content from "./content.json";
+
+const CONTACT_EMAIL = "hello@example.com";
+
+/* ---------- Sample data for dashboard ---------- */
+const NAV = [
+  { label: "Dashboard", icon: "dashboard" },
+  { label: "Employees", icon: "users" },
+  { label: "Shifts", icon: "clock" },
+  { label: "Calendar", icon: "calendar" },
+  { label: "Devices", icon: "device" },
+  { label: "Settings", icon: "settings" },
+  { label: "About", icon: "info" },
+];
+
+const WEEK = [
+  { day: "Mon", value: 188 },
+  { day: "Tue", value: 194 },
+  { day: "Wed", value: 190 },
+  { day: "Thu", value: 201 },
+  { day: "Fri", value: 196 },
+  { day: "Sat", value: 142 },
+  { day: "Sun", value: 64 },
+];
+
+const ABSENT = [
+  { name: "Mekdes Alemu", dept: "Assembly", reason: "Sick leave" },
+  { name: "Dawit Haile", dept: "Warehouse", reason: "No check-in" },
+  { name: "Selam Tesfaye", dept: "Finance", reason: "Annual leave" },
+  { name: "Yared Bekele", dept: "Assembly", reason: "No check-in" },
+  { name: "Hana Girma", dept: "IT", reason: "Sick leave" },
+  { name: "Biruk Tadesse", dept: "Warehouse", reason: "Annual leave" },
+];
+
+const RECORDS = [
+  { id: 1, name: "Abel Kebede", shift: "Morning", in: "07:52", out: "—", hours: "In progress", status: "On time", method: "Fingerprint", device: "Main entrance" },
+  { id: 2, name: "Rahel Mulugeta", shift: "Morning", in: "07:58", out: "—", hours: "In progress", status: "On time", method: "Fingerprint", device: "Main entrance" },
+  { id: 3, name: "Samuel Worku", shift: "Morning", in: "08:03", out: "—", hours: "In progress", status: "On time", method: "Face", device: "Warehouse gate" },
+  { id: 4, name: "Liya Assefa", shift: "Morning", in: "08:14", out: "—", hours: "In progress", status: "Late", method: "RFID card", device: "Assembly line" },
+  { id: 5, name: "Tewodros Negash", shift: "Morning", in: "08:21", out: "—", hours: "In progress", status: "On time", method: "Card and fingerprint", device: "Server room" },
+  { id: 6, name: "Marta Desta", shift: "Night", in: "20:01", out: "06:04", hours: "10h 03m", status: "On time", method: "Face", device: "Main entrance" },
+  { id: 7, name: "Kidus Tilahun", shift: "Night", in: "20:19", out: "06:00", hours: "9h 41m", status: "Late", method: "RFID card", device: "Warehouse gate" },
+];
+
+const STATUS_STYLE = {
+  "On time": "bg-emerald-50 text-emerald-700",
+  Late: "bg-amber-100 text-amber-800",
+};
+
+/* ---------- Icon paths ---------- */
+const PATHS = {
+  dashboard: (
+    <>
+      <rect x="3" y="3" width="7" height="9" rx="1" />
+      <rect x="14" y="3" width="7" height="5" rx="1" />
+      <rect x="14" y="12" width="7" height="9" rx="1" />
+      <rect x="3" y="16" width="7" height="5" rx="1" />
+    </>
+  ),
+  users: (
+    <>
+      <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+      <circle cx="9" cy="7" r="4" />
+      <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+      <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+    </>
+  ),
+  clock: (
+    <>
+      <circle cx="12" cy="12" r="10" />
+      <path d="M12 6v6l4 2" />
+    </>
+  ),
+  calendar: (
+    <>
+      <rect x="3" y="4" width="18" height="18" rx="2" />
+      <path d="M16 2v4M8 2v4M3 10h18" />
+    </>
+  ),
+  device: (
+    <>
+      <rect x="2" y="3" width="20" height="14" rx="2" />
+      <path d="M8 21h8M12 17v4" />
+    </>
+  ),
+  settings: (
+    <>
+      <circle cx="12" cy="12" r="3" />
+      <path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M19.1 4.9L17 7M7 17l-2.1 2.1" />
+    </>
+  ),
+  info: (
+    <>
+      <circle cx="12" cy="12" r="10" />
+      <path d="M12 16v-4M12 8h.01" />
+    </>
+  ),
+  chart: (
+    <>
+      <path d="M3 3v18h18" />
+      <path d="M8 17v-5M13 17V7M18 17v-8" />
+    </>
+  ),
+  download: (
+    <>
+      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+      <path d="M7 10l5 5 5-5M12 15V3" />
+    </>
+  ),
+  sync: (
+    <>
+      <path d="M21 12a9 9 0 0 0-15-6.7L3 8" />
+      <path d="M3 3v5h5" />
+      <path d="M3 12a9 9 0 0 0 15 6.7L21 16" />
+      <path d="M16 16h5v5" />
+    </>
+  ),
+  userx: (
+    <>
+      <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+      <circle cx="9" cy="7" r="4" />
+      <path d="M17 8l5 5M22 8l-5 5" />
+    </>
+  ),
+  usercheck: (
+    <>
+      <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+      <circle cx="9" cy="7" r="4" />
+      <path d="M16 11l2 2 4-4" />
+    </>
+  ),
+  chevron: <path d="M6 15l6-6 6 6" />,
+  close: <path d="M18 6L6 18M6 6l12 12" />,
+  search: (
+    <>
+      <circle cx="11" cy="11" r="7" />
+      <path d="M21 21l-4.3-4.3" />
+    </>
+  ),
+  fingerprint: (
+    <>
+      <path d="M5 11a7 7 0 0 1 14 0" />
+      <path d="M8.5 13.5a3.5 3.5 0 0 1 7 0V17" />
+      <path d="M12 11v8" />
+    </>
+  ),
+  monitor: (
+    <>
+      <rect x="3" y="4" width="18" height="13" rx="2" />
+      <path d="M8 21h8M12 17v4" />
+    </>
+  ),
+  bars: <path d="M4 20V10M10 20V4M16 20v-7M22 20H2" />,
+  lock: (
+    <>
+      <rect x="4" y="11" width="16" height="10" rx="2" />
+      <path d="M8 11V8a4 4 0 0 1 8 0v3" />
+    </>
+  ),
+  check: <path d="M5 12l5 5 9-10" />,
+};
+
+function Ico({ name, size = 18, className = "" }: { name: string; size?: number; className?: string }) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+      aria-hidden="true"
+    >
+      {PATHS[name as keyof typeof PATHS]}
+    </svg>
+  );
+}
+
+function Logo({ size = 30 }: { size?: number }) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 30 30"
+      aria-hidden="true"
+      className="shrink-0 drop-shadow-sm"
+    >
+      <rect width="30" height="30" rx="7" fill="#0B2239" />
+      <path d="M8 17a7 7 0 0 1 14 0" stroke="#fff" strokeWidth="2" strokeLinecap="round" fill="none" />
+      <circle cx="15" cy="19" r="2.2" fill="#F5B301" />
+    </svg>
+  );
+}
+
+/* macOS traffic-light button with hover glyph */
+function Light({ color, label, onClick, children }: { color: string; label: string; onClick: () => void; children: ReactNode }) {
+  return (
+    <button
+      type="button"
+      aria-label={label}
+      onClick={onClick}
+      className="group/light w-3 h-3 rounded-full flex items-center justify-center transition-[filter] hover:brightness-95 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500"
+      style={{ background: color }}
+    >
+      <svg
+        width="8"
+        height="8"
+        viewBox="0 0 8 8"
+        fill="none"
+        stroke="rgba(0,0,0,.55)"
+        strokeWidth="1.2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        className="opacity-0 group-hover/light:opacity-100 transition-opacity"
+        aria-hidden="true"
+      >
+        {children}
+      </svg>
+    </button>
+  );
+}
+
+/* ---------- Dashboard Window Component ---------- */
+function DashboardWindow() {
+  const [grown, setGrown] = useState(false);
+  const [showAbsent, setShowAbsent] = useState(true);
+  const [query, setQuery] = useState("");
+  const [method, setMethod] = useState("All types");
+  const [now, setNow] = useState<Date | null>(null);
+  const [closed, setClosed] = useState(false);
+  const [minimized, setMinimized] = useState(false);
+  const [maximized, setMaximized] = useState(false);
+
+  // Esc exits maximized view
+  useEffect(() => {
+    if (!maximized) return;
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && setMaximized(false);
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [maximized]);
+
+  // Bars grow once on load. Clock is set after mount to avoid hydration mismatch.
+  useEffect(() => {
+    const t = requestAnimationFrame(() => setGrown(true));
+    setNow(new Date());
+    const id = setInterval(() => setNow(new Date()), 30000);
+    return () => {
+      cancelAnimationFrame(t);
+      clearInterval(id);
+    };
+  }, []);
+
+  const time = now ? now.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" }) : "08:30 AM";
+  const date = now
+    ? now.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric", year: "numeric" })
+    : "Mon, Jan 1, 2026";
+
+  const methods = ["All types", ...Array.from(new Set(RECORDS.map((r) => r.method)))];
+  const rows = RECORDS.filter(
+    (r) =>
+      r.name.toLowerCase().includes(query.toLowerCase()) &&
+      (method === "All types" || r.method === method)
+  );
+  const max = Math.max(...WEEK.map((w) => w.value));
+
+  const stats = [
+    { label: "Total employees", value: 202, icon: "users", color: "text-blue-600" },
+    { label: "Present today", value: 196, icon: "usercheck", color: "text-emerald-600", note: "12 arrived late" },
+    { label: "Absent", value: ABSENT.length, icon: "userx", color: "text-red-500", toggle: true },
+  ];
+
+  return (
+    <section className={maximized ? "" : "pb-20"}>
+      {closed && (
+        <div className="flex justify-center py-16">
+          <button
+            type="button"
+            onClick={() => {
+              setClosed(false);
+              setMinimized(false);
+            }}
+            className="px-4 py-2 rounded-lg border border-slate-200 bg-white text-sm font-medium text-slate-700 shadow-sm hover:shadow-md transition-shadow"
+          >
+            Reopen dashboard preview
+          </button>
+        </div>
+      )}
+
+      {maximized && <div className="fixed inset-0 z-40 bg-slate-900/40" onClick={() => setMaximized(false)} />}
+
+      <div
+        className={`border border-slate-200 bg-white overflow-hidden transition-all duration-300 ${closed ? "hidden" : ""
+          } ${maximized
+            ? "fixed inset-3 md:inset-6 z-50 rounded-xl shadow-2xl overflow-y-auto"
+            : "rounded-2xl shadow-lg"
+          }`}
+      >
+        {/* Window chrome */}
+        <div className="sticky top-0 z-10 flex items-center gap-2 px-5 py-3 bg-slate-50 border-b border-slate-200">
+          <div className="flex items-center gap-2">
+            <Light color="#FF5F57" label="Close" onClick={() => setClosed(true)}>
+              <path d="M1.5 1.5l5 5M6.5 1.5l-5 5" />
+            </Light>
+            <Light color="#FEBC2E" label={minimized ? "Restore" : "Minimize"} onClick={() => setMinimized((v) => !v)}>
+              <path d="M1.2 4h5.6" />
+            </Light>
+            <Light color="#28C840" label={maximized ? "Exit full screen" : "Maximize"} onClick={() => setMaximized((v) => !v)}>
+              <path d="M1.5 6.5V3M1.5 6.5H5M6.5 1.5V5M6.5 1.5H3" />
+            </Light>
+          </div>
+          <span className="flex-1 text-center text-[13px] text-slate-500 font-medium">
+            BioShift dashboard, sample data
+          </span>
+          <b className="relative pl-4 pr-2.5 py-1 bg-emerald-50 text-emerald-600 rounded-xl text-xs font-semibold">
+            <span className="absolute left-2 top-1/2 w-1.5 h-1.5 bg-emerald-500 rounded-full -translate-y-1/2 animate-pulse" />
+            <span className="ml-1.5">Live</span>
+          </b>
+        </div>
+
+        <div className={`grid grid-cols-[60px_1fr] md:grid-cols-[210px_1fr] bg-[#F8FAFC] ${minimized ? "hidden" : ""}`}>
+          {/* Sidebar */}
+          <aside className="flex flex-col bg-white border-r border-slate-200">
+            <div className="flex items-center justify-center md:justify-start gap-3 px-3 md:px-5 py-4 border-b border-slate-200">
+              <Logo size={30} />
+              <span className="hidden md:inline font-serif text-xl font-semibold text-[#0B2239]">BioShift</span>
+            </div>
+            <nav className="flex flex-col gap-1 p-2 md:p-3">
+              {NAV.map((n, i) => (
+                <button
+                  key={n.label}
+                  type="button"
+                  title={n.label}
+                  className={`flex items-center justify-center md:justify-start gap-3 px-2 md:px-3 py-2.5 rounded-lg text-sm text-left transition-colors ${i === 0
+                    ? "bg-blue-50 text-blue-600 font-medium border border-blue-100"
+                    : "text-slate-500 hover:bg-slate-50 hover:text-slate-800 border border-transparent"
+                    }`}
+                >
+                  <Ico name={n.icon} size={18} />
+                  <span className="hidden md:inline flex-1">{n.label}</span>
+                  {i === 0 && <span className="hidden md:inline w-1.5 h-1.5 rounded-full bg-blue-500" />}
+                </button>
+              ))}
+            </nav>
+            <div className="mt-auto flex flex-col items-center gap-2 py-6 border-t border-slate-200">
+              <Logo size={48} />
+              <span className="hidden md:inline font-serif text-sm font-semibold text-[#0B2239]">BioShift</span>
+            </div>
+          </aside>
+
+          {/* Main */}
+          <div className="min-w-0 flex flex-col">
+            {/* Top bar */}
+            <header className="flex items-center gap-3 px-5 md:px-6 py-3 bg-white border-b border-slate-200">
+              <Logo size={28} />
+              <span className="font-semibold text-slate-800 text-[15px] flex-1 truncate">BioShift Dashboard</span>
+              <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-blue-50 border border-blue-100">
+                <Ico name="clock" size={15} className="text-blue-500" />
+                <div className="leading-tight">
+                  <div className="text-[13px] font-medium text-slate-800 tabular-nums">{time}</div>
+                  <div className="text-[11px] text-slate-500">{date}</div>
+                </div>
+              </div>
+              <button
+                type="button"
+                className="inline-flex items-center gap-2 px-3.5 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium transition-colors"
+              >
+                <Ico name="sync" size={15} />
+                Sync logs
+              </button>
+            </header>
+
+            <div className="p-5 md:p-6 flex flex-col gap-6">
+              {/* Heading */}
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <h2 className="flex items-center gap-2.5 text-2xl font-bold text-slate-800">
+                    <Ico name="chart" size={24} className="text-blue-500" />
+                    Attendance dashboard
+                  </h2>
+                  <p className="mt-1 text-sm text-slate-600">
+                    Monitor employee attendance and manage workforce efficiently
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  className="shrink-0 inline-flex items-center gap-2 px-3.5 py-2 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-white text-sm font-medium transition-colors"
+                >
+                  <Ico name="download" size={15} />
+                  Export to Excel
+                </button>
+              </div>
+
+              {/* Stat cards */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                {stats.map((s) => {
+                  const Tag = s.toggle ? "button" : "div";
+                  return (
+                    <Tag
+                      key={s.label}
+                      {...(s.toggle
+                        ? { type: "button", onClick: () => setShowAbsent((v) => !v), "aria-expanded": showAbsent }
+                        : {})}
+                      className={`relative text-left p-5 rounded-xl bg-white border border-slate-200 shadow-sm ${s.toggle ? "hover:shadow-md transition-shadow cursor-pointer" : ""
+                        }`}
+                    >
+                      <div className="flex items-center gap-3">
+                        <Ico name={s.icon} size={20} className={s.color} />
+                        <span className="font-semibold text-slate-800">{s.label}</span>
+                        {s.toggle && (
+                          <Ico
+                            name="chevron"
+                            size={15}
+                            className={`ml-auto text-slate-400 transition-transform ${showAbsent ? "" : "rotate-180"}`}
+                          />
+                        )}
+                      </div>
+                      <div className="mt-4 text-3xl font-bold text-blue-600 tabular-nums">{s.value}</div>
+                      <div className="mt-1 h-4 text-xs text-slate-500">
+                        {s.note || (s.toggle ? "Click to manage sick leave" : "")}
+                      </div>
+                    </Tag>
+                  );
+                })}
+              </div>
+
+              {/* Absent panel */}
+              {showAbsent && (
+                <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+                  <div className="flex items-center gap-2 px-5 py-3.5 border-b border-slate-200">
+                    <Ico name="userx" size={16} className="text-red-500" />
+                    <span className="font-semibold text-sm text-slate-800">Absent employees today</span>
+                    <span className="px-1.5 py-0.5 rounded-full bg-red-50 text-red-600 text-[11px] font-semibold">
+                      {ABSENT.length}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => setShowAbsent(false)}
+                      className="ml-auto text-slate-400 hover:text-slate-700"
+                      aria-label="Close absent list"
+                    >
+                      <Ico name="close" size={16} />
+                    </button>
+                  </div>
+                  <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-px bg-slate-100">
+                    {ABSENT.map((a) => (
+                      <li key={a.name} className="flex items-center gap-3 px-5 py-3 bg-white">
+                        <span className="w-8 h-8 rounded-full bg-slate-100 text-slate-600 text-xs font-semibold flex items-center justify-center">
+                          {a.name
+                            .split(" ")
+                            .map((p) => p[0])
+                            .join("")}
+                        </span>
+                        <div className="min-w-0 flex-1">
+                          <div className="text-sm font-medium text-slate-800 truncate">{a.name}</div>
+                          <div className="text-xs text-slate-500">{a.dept}</div>
+                        </div>
+                        <span
+                          className={`text-[11px] font-medium px-2 py-0.5 rounded-full whitespace-nowrap ${a.reason === "No check-in" ? "bg-red-50 text-red-600" : "bg-slate-100 text-slate-600"
+                            }`}
+                        >
+                          {a.reason}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {/* Weekly bars */}
+              <div className="p-5 bg-white rounded-xl border border-slate-200 shadow-sm">
+                <div className="flex items-baseline justify-between mb-4">
+                  <p className="font-semibold text-sm text-slate-800">Check-ins this week</p>
+                  <p className="text-xs text-slate-500">
+                    {WEEK.reduce((a, w) => a + w.value, 0).toLocaleString()} total
+                  </p>
+                </div>
+                <div className="flex items-end gap-3 h-[150px]">
+                  {WEEK.map((w, i) => (
+                    <div key={w.day} className="flex-1 h-full flex flex-col justify-end items-center gap-1.5">
+                      <span className="text-xs font-medium text-slate-600 tabular-nums">{w.value}</span>
+                      <div
+                        className="w-full rounded-t-md bg-gradient-to-b from-[#4A90E2] to-[#2E5C99] origin-bottom transition-[height] duration-700 ease-out"
+                        style={{
+                          height: grown ? `${(w.value / max) * 100}%` : "0%",
+                          maxHeight: "calc(100% - 38px)",
+                          transitionDelay: `${i * 70}ms`,
+                        }}
+                      />
+                      <span className="text-xs text-slate-500">{w.day}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Filters */}
+              <div className="flex flex-wrap gap-3">
+                <label className="relative">
+                  <Ico name="search" size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                  <input
+                    value={query}
+                    onChange={(e) => setQuery(e.target.value)}
+                    placeholder="Search name..."
+                    className="w-56 pl-9 pr-3 py-2 rounded-lg border border-slate-200 bg-white text-sm placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-400"
+                  />
+                </label>
+                <select
+                  value={method}
+                  onChange={(e) => setMethod(e.target.value)}
+                  className="px-3 py-2 rounded-lg border border-slate-200 bg-white text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-400"
+                >
+                  {methods.map((m) => (
+                    <option key={m}>{m}</option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Records table */}
+              <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-3">
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm min-w-[760px]">
+                    <thead>
+                      <tr className="bg-slate-50 text-left text-slate-700">
+                        {["#", "Employee", "Shift", "In time", "Out time", "Hours", "Status", "Method", "Device"].map(
+                          (h) => (
+                            <th key={h} className="px-3 py-2.5 font-semibold first:rounded-tl-lg last:rounded-tr-lg">
+                              {h}
+                            </th>
+                          )
+                        )}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {rows.length === 0 ? (
+                        <tr>
+                          <td colSpan={9} className="px-3 py-10 text-center text-slate-500">
+                            No records match your filters.
+                          </td>
+                        </tr>
+                      ) : (
+                        rows.map((r) => (
+                          <tr key={r.id} className="border-t border-slate-100 hover:bg-slate-50/70 transition-colors">
+                            <td className="px-3 py-3 text-slate-500 tabular-nums">{r.id}</td>
+                            <td className="px-3 py-3 font-medium text-slate-800">{r.name}</td>
+                            <td className="px-3 py-3 text-slate-600">{r.shift}</td>
+                            <td className="px-3 py-3 font-mono tabular-nums text-slate-800">{r.in}</td>
+                            <td className="px-3 py-3 font-mono tabular-nums text-slate-500">{r.out}</td>
+                            <td className="px-3 py-3 text-slate-600 whitespace-nowrap">{r.hours}</td>
+                            <td className="px-3 py-3">
+                              <span
+                                className={`px-2.5 py-1 rounded-full text-xs font-semibold whitespace-nowrap ${STATUS_STYLE[r.status as keyof typeof STATUS_STYLE]
+                                  }`}
+                              >
+                                {r.status}
+                              </span>
+                            </td>
+                            <td className="px-3 py-3 text-slate-600 whitespace-nowrap">{r.method}</td>
+                            <td className="px-3 py-3 text-slate-600 whitespace-nowrap">{r.device}</td>
+                          </tr>
+                        ))
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+const ICONS: Record<string, ReactNode> = PATHS;
+
+function Icon({ name, size = 22 }: { name: string; size?: number }) {
+  return (
+    <svg
+      className="inline-block"
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.75}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      {ICONS[name]}
+    </svg>
+  );
+}
+
+function Brand() {
+  return (
+    <a
+      href="#top"
+      className="flex items-center gap-3 font-serif text-2xl font-semibold transition-all duration-300 hover:-translate-y-0.5 group"
+    >
+      <svg
+        width="30"
+        height="30"
+        viewBox="0 0 30 30"
+        aria-hidden="true"
+        className="drop-shadow-sm transition-transform duration-300 group-hover:rotate-[-5deg] group-hover:scale-105"
+      >
+        <rect width="30" height="30" rx="7" fill="#0B2239" />
+        <path
+          d="M8 17a7 7 0 0 1 14 0"
+          stroke="#fff"
+          strokeWidth="2"
+          strokeLinecap="round"
+          fill="none"
+        />
+        <circle cx="15" cy="19" r="2.2" fill="#F5B301" />
+      </svg>
+      BioShift
+    </a>
+  );
+}
+
+export default function Home() {
+  const mail = `mailto:${CONTACT_EMAIL}`;
+  const { dash } = content;
+
+  return (
+    <>
+      {/* Sticky Navbar */}
+      <div className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md border-b border-line">
+        <div className="max-w-[1200px] mx-auto px-8">
+          <header className="flex flex-wrap items-center justify-between gap-5 py-7">
+            <Brand />
+            <nav className="flex flex-wrap items-center gap-8 text-[15px] font-medium" aria-label="Main">
+              <a
+                href="#features"
+                className="relative transition-colors duration-300 hover:text-navy after:absolute after:bottom-[-6px] after:left-0 after:h-0.5 after:w-0 after:bg-navy after:transition-all after:duration-300 hover:after:w-full"
+              >
+                Features
+              </a>
+              <a
+                href="#reliability"
+                className="relative transition-colors duration-300 hover:text-navy after:absolute after:bottom-[-6px] after:left-0 after:h-0.5 after:w-0 after:bg-navy after:transition-all after:duration-300 hover:after:w-full"
+              >
+                Reliability
+              </a>
+              <a
+                href="#rollout"
+                className="relative transition-colors duration-300 hover:text-navy after:absolute after:bottom-[-6px] after:left-0 after:h-0.5 after:w-0 after:bg-navy after:transition-all after:duration-300 hover:after:w-full"
+              >
+                Rollout
+              </a>
+              <a
+                href={mail}
+                className="inline-block px-7 py-3.5 rounded-lg font-semibold text-[15px] bg-gradient-to-br from-navy to-navy-light text-white shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md active:translate-y-0 relative overflow-hidden group"
+              >
+                <span className="relative z-10">Request a demo</span>
+                <div className="absolute inset-0 bg-gradient-to-br from-white/15 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+              </a>
+            </nav>
+          </header>
+        </div>
+      </div>
+
+      {/* Main Content with top padding to account for fixed navbar */}
+      <div className="pt-28 max-w-[1200px] mx-auto px-8" id="top">
+        {/* Hero Section */}
+        <section className="flex flex-col items-center text-center py-20 pb-15 animate-fadeInScale">
+          <div className="max-w-[800px] space-y-6">
+            <h1
+              className="text-5xl md:text-6xl lg:text-7xl font-serif font-semibold leading-[1.08] tracking-[-0.02em] bg-gradient-to-br from-navy to-navy-light bg-clip-text text-transparent mb-7 animate-fadeIn"
+              style={{ animationDelay: '0.1s', animationFillMode: 'both' }}
+            >
+              Attendance you can verify, from the door to payroll.
+            </h1>
+            <p
+              className="text-xl text-mut max-w-[640px] mx-auto leading-[1.75] animate-fadeIn"
+              style={{ animationDelay: '0.2s', animationFillMode: 'both' }}
+            >
+              BioShift connects ZKTeco fingerprint, face and card terminals to a real-time dashboard, so attendance,
+              shifts and leave stay accurate and auditable at every site.
+            </p>
+            <div
+              className="flex flex-wrap justify-center gap-4 animate-fadeIn"
+              style={{ animationDelay: '0.3s', animationFillMode: 'both' }}
+            >
+              <a
+                href={mail}
+                className="inline-block px-7 py-3.5 rounded-lg font-semibold text-[15px] bg-gradient-to-br from-navy to-navy-light text-white shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md active:translate-y-0 relative overflow-hidden group"
+              >
+                <span className="relative z-10">Request a demo</span>
+                <div className="absolute inset-0 bg-gradient-to-br from-white/15 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+                <div className="absolute top-1/2 left-1/2 w-0 h-0 rounded-full bg-white/20 -translate-x-1/2 -translate-y-1/2 transition-all duration-600 group-hover:w-[300px] group-hover:h-[300px]" />
+              </a>
+              <a
+                href="#rollout"
+                className="inline-block px-7 py-3.5 rounded-lg font-semibold text-[15px] bg-white border-2 border-line transition-all duration-300 hover:-translate-y-0.5 hover:bg-slate hover:border-navy hover:shadow-sm active:translate-y-0"
+              >
+                See the rollout
+              </a>
+            </div>
+            <p
+              className="flex items-center justify-center gap-2 mt-8 text-sm text-mut animate-fadeIn"
+              style={{ animationDelay: '0.4s', animationFillMode: 'both' }}
+            >
+              <span className="w-1.5 h-1.5 rounded-full bg-amber animate-pulse-soft" />
+              Works with ZKTeco XFace Pro and U270 terminals.
+            </p>
+          </div>
+        </section>
+
+        {/* Dashboard Window */}
+        <DashboardWindow />
+      </div>
+      <div className="border border-line rounded-2xl bg-white shadow-lg overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl animate-slideUpFade">
+        {/* Window Title Bar */}
+        <div className="relative flex items-center gap-2 px-5 py-3.5 bg-gradient-to-br from-[#F8FAFB] to-slate border-b border-line overflow-hidden">
+          <div className="absolute top-0 left-[-100%] w-full h-full bg-gradient-to-r from-transparent via-white/40 to-transparent animate-shimmer" />
+          <i
+            className="w-3 h-3 rounded-full bg-[#FF5F57] transition-all duration-300 hover:scale-110 hover:brightness-110 animate-slideInLeft"
+            style={{ animationDelay: '0.1s', animationFillMode: 'both' }}
+          />
+          <i
+            className="w-3 h-3 rounded-full bg-[#FEBC2E] transition-all duration-300 hover:scale-110 hover:brightness-110 animate-slideInLeft"
+            style={{ animationDelay: '0.2s', animationFillMode: 'both' }}
+          />
+          <i
+            className="w-3 h-3 rounded-full bg-[#28C840] transition-all duration-300 hover:scale-110 hover:brightness-110 animate-slideInLeft"
+            style={{ animationDelay: '0.3s', animationFillMode: 'both' }}
+          />
+          <span
+            className="flex-1 text-center text-[13px] text-mut font-medium -ml-15 animate-fadeIn"
+            style={{ animationDelay: '0.4s', animationFillMode: 'both' }}
+          >
+            BioShift dashboard, sample data
+          </span>
+          <b className="relative px-2.5 py-1 bg-[#28C840]/10 text-[#28C840] rounded-xl text-xs font-semibold animate-pulse-soft">
+            <span className="absolute left-[-6px] top-1/2 w-1.5 h-1.5 bg-[#28C840] rounded-full -translate-y-1/2 animate-pulse-soft" />
+            Live
+          </b>
+        </div>
+
+        {/* Window Body */}
+        <div
+          className="grid grid-cols-1 md:grid-cols-[200px_1fr] min-h-[500px] animate-fadeIn"
+          style={{ animationDelay: '0.5s', animationFillMode: 'both' }}
+        >
+          {/* Sidebar */}
+          <div className="bg-gradient-to-b from-[#FAFBFC] to-[#F5F7F9] md:border-r border-b md:border-b-0 border-line py-4 md:py-6 px-5 md:px-0 flex flex-row md:flex-col gap-2 md:gap-1 overflow-x-auto md:overflow-visible">
+            {dash.side.map((s, i) => (
+              <b
+                key={s}
+                className={`relative px-6 py-3 font-medium transition-all duration-300 cursor-pointer border-l-[3px] border-transparent hover:text-navy hover:pl-7 animate-slideInLeft ${i === 0
+                  ? "bg-navy/6 text-navy font-semibold !border-navy after:absolute after:right-4 after:top-1/2 after:w-1.5 after:h-1.5 after:bg-navy after:rounded-full after:-translate-y-1/2"
+                  : "text-mut"
+                  }`}
+                style={{ animationDelay: `${0.6 + i * 0.05}s`, animationFillMode: 'forwards' }}
+              >
+                {s}
+              </b>
+            ))}
+          </div>
+
+          {/* Main Content */}
+          <div className="p-8 flex flex-col gap-8">
+            {/* KPIs */}
+            <div className="grid grid-cols-[repeat(auto-fit,minmax(140px,1fr))] gap-4">
+              {dash.kpis.map((k, i) => (
+                <div
+                  key={k.label}
+                  className={`relative p-5 rounded-xl bg-[#FAFBFC] border border-line transition-all duration-300 hover:-translate-y-1 hover:scale-[1.02] hover:shadow-md hover:border-current overflow-hidden cursor-pointer animate-countUp before:absolute before:top-0 before:left-0 before:w-full before:h-[3px] before:bg-current before:scale-x-0 before:origin-left before:transition-transform before:duration-300 hover:before:scale-x-100 ${k.tone === "ok"
+                    ? "text-[#28C840]"
+                    : k.tone === "late"
+                      ? "text-[#F5B301]"
+                      : "text-[#FF5F57]"
+                    }`}
+                  style={{ animationDelay: `${0.7 + i * 0.1}s`, animationFillMode: 'forwards' }}
+                >
+                  <small className="block text-[13px] text-mut font-medium mb-2 uppercase tracking-wide">
+                    {k.label}
+                  </small>
+                  <strong className="block text-4xl font-bold font-serif leading-none">
+                    {k.value}
+                  </strong>
+                </div>
+              ))}
+            </div>
+
+            {/* Chart */}
+            <div className="p-6 bg-[#FAFBFC] rounded-xl border border-line transition-shadow duration-300 hover:shadow-sm animate-fadeIn  ">
+              <p className="mb-5 font-semibold text-navy text-[15px]">Check-ins this week</p>
+              <div className="flex items-end gap-3 h-[120px]">
+                {dash.bars.map((h, i) => (
+                  <i
+                    key={i}
+                    className="relative flex-1 bg-gradient-to-b from-[#4A90E2] to-[#2E5C99] rounded-t-md min-h-[20%] transition-all duration-300 cursor-pointer hover:from-[#5BA3FF] hover:to-[#3D72C4] hover:scale-y-[1.08] origin-bottom animate-barGrow before:absolute before:top-0 before:left-0 before:right-0 before:h-0 before:bg-gradient-to-b before:from-white/30 before:to-transparent before:rounded-t-md before:transition-all before:duration-300 hover:before:h-[40%] hover:brightness-110"
+                    style={{ height: `${h}%`, animationDelay: `${1.1 + i * 0.1}s`, animationFillMode: 'forwards' }}
+                  />
+                ))}
+              </div>
+            </div>
+
+            {/* Latest Check-ins */}
+            <div className="animate-fadeIn  ">
+              <p className="mb-5 font-semibold text-navy text-[15px]">Latest check-ins</p>
+              {content.events.map((e, i) => (
+                <div
+                  key={e.time}
+                  className="relative grid grid-cols-[70px_1fr_auto] gap-5 items-center px-6 py-4.5 border-t border-line transition-all duration-300 hover:bg-[#FAFBFC] hover:pl-7 before:absolute before:left-0 before:top-0 before:bottom-0 before:w-[3px] before:bg-navy before:scale-y-0 before:transition-transform before:duration-300 hover:before:scale-y-100 animate-slideInLeft"
+                  style={{ animationDelay: `${1.3 + i * 0.1}s`, animationFillMode: 'forwards' }}
+                >
+                  <span className="font-mono font-bold text-navy text-base tabular-nums">{e.time}</span>
+                  <div>
+                    {e.place}
+                    <small className="block text-sm text-mut mt-0.5">{e.method}</small>
+                  </div>
+                  {e.status === "Late" ? (
+                    <span className="flex items-center gap-1.5 text-sm font-semibold text-[#5A4200] px-3.5 py-1.5 rounded-full bg-gradient-to-br from-[#FCE9AE] to-[#FFE5A3] shadow-sm transition-all duration-300 hover:shadow-md hover:scale-105 whitespace-nowrap">
+                      Late
+                    </span>
+                  ) : (
+                    <span className="flex items-center gap-1.5 text-sm font-semibold text-navy px-3.5 py-1.5 rounded-full bg-navy/6 transition-all duration-300 hover:bg-navy/10 hover:scale-105 whitespace-nowrap">
+                      <Icon name="check" size={16} />
+                      {e.status}
+                    </span>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    </section >
+      </div >
+
+    {/* Rest of the sections */ }
+    < section className = "py-30 border-t border-line relative animate-fadeIn" >
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-30 h-1 bg-gradient-to-r from-amber to-amber-light rounded opacity-30" />
+        <div className="max-w-[1200px] mx-auto px-8">
+          <h2 className="text-4xl md:text-5xl font-serif leading-tight max-w-[800px] mb-5 text-navy">
+            Manual attendance costs more than it looks
+          </h2>
+          <p className="text-mut text-lg max-w-[640px] mb-16 leading-relaxed">
+            Paper and spreadsheets leave gaps in accuracy, visibility and compliance. BioShift closes them.
+          </p>
+          <div className="grid grid-cols-2 gap-4 gap-x-14 pb-5 text-sm text-mut font-bold uppercase tracking-wide">
+            <span>Manual and paper-based</span>
+            <span>With BioShift</span>
+          </div>
+          {content.compare.map((c) => (
+            <div
+              key={c.before}
+              className="grid grid-cols-[repeat(auto-fit,minmax(300px,1fr))] gap-4 gap-x-14 py-8 border-t border-line items-start transition-all duration-300 hover:pl-5 hover:border-l-[3px] hover:border-amber hover:border-t-transparent"
+            >
+              <p className="m-0 leading-relaxed">{c.before}</p>
+              <p className="m-0 font-semibold text-navy leading-relaxed">{c.after}</p>
+            </div>
+          ))}
+        </div>
+      </section >
+
+      <section className="py-30 border-t border-line relative animate-fadeIn" id="features">
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-30 h-1 bg-gradient-to-r from-amber to-amber-light rounded opacity-30" />
+        <div className="max-w-[1200px] mx-auto px-8">
+          <h2 className="text-4xl md:text-5xl font-serif leading-tight max-w-[800px] mb-5 text-navy">
+            Everything attendance needs, in one place
+          </h2>
+          <p className="text-mut text-lg max-w-[640px] mb-16 leading-relaxed">
+            From the terminal at the door to the report on payroll's desk.
+          </p>
+          {content.features.map((f) => (
+            <div
+              key={f.title}
+              className="grid grid-cols-[repeat(auto-fit,minmax(300px,1fr))] gap-4 gap-x-14 py-8 border-t border-line items-start transition-all duration-300 hover:pl-5 hover:border-l-[3px] hover:border-amber hover:border-t-transparent"
+            >
+              <h3 className="flex items-center gap-4 text-2xl font-serif mb-3 text-navy">
+                <span className="p-2 bg-navy/6 rounded-xl transition-all duration-300 group-hover:bg-gradient-to-br group-hover:from-amber group-hover:to-amber-light group-hover:text-white group-hover:scale-110">
+                  <Icon name={f.icon} />
+                </span>
+                {f.title}
+              </h3>
+              <p className="m-0 text-mut leading-relaxed">{f.text}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section className="py-30 bg-gradient-to-br from-navy-dark to-navy text-[#E8EEF4] relative overflow-hidden animate-fadeIn" id="reliability">
+        <div className="absolute top-[-50%] right-[-20%] w-[600px] h-[600px] rounded-full bg-[radial-gradient(circle,rgba(245,179,1,0.08)_0%,transparent_70%)] pointer-events-none" />
+        <div className="max-w-[1200px] mx-auto px-8">
+          <div className="grid grid-cols-[repeat(auto-fit,minmax(340px,1fr))] gap-20 relative z-10">
+            <div>
+              <h2 className="text-4xl md:text-5xl font-serif leading-tight mb-5 text-white">Built to keep working</h2>
+              <p className="text-[#B4C3D2] text-lg mb-0 leading-relaxed">
+                Attendance events are not lost to a network drop, and every action leaves a record.
+              </p>
+              <p className="text-[#B4C3D2] mt-4">
+                Supported terminals: ZKTeco XFace Pro for facial recognition, and ZKTeco U270 for fingerprint and card.
+              </p>
+            </div>
+            <div>
+              {content.reliability.map((r) => (
+                <div
+                  key={r.title}
+                  className="flex gap-4 py-6 border-t border-white/12 transition-all duration-300 hover:pl-4 hover:border-l-[3px] hover:border-amber hover:border-t-transparent"
+                >
+                  <span className="p-2.5 bg-amber/15 text-amber rounded-xl mt-1">
+                    <Icon name="check" />
+                  </span>
+                  <div>
+                    <h3 className="text-xl font-serif mb-1.5 text-white">{r.title}</h3>
+                    <p className="m-0 text-[#B4C3D2]">{r.text}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="py-30 border-t border-line relative animate-fadeIn" id="rollout">
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-30 h-1 bg-gradient-to-r from-amber to-amber-light rounded opacity-30" />
+        <div className="max-w-[1200px] mx-auto px-8">
+          <h2 className="text-4xl md:text-5xl font-serif leading-tight max-w-[800px] mb-5 text-navy">
+            A rollout in three phases
+          </h2>
+          <p className="text-mut text-lg max-w-[640px] mb-16 leading-relaxed">
+            Run alongside your current process first, then switch over once the numbers match.
+          </p>
+          <div className="grid grid-cols-[repeat(auto-fit,minmax(280px,1fr))] gap-10">
+            {content.phases.map((p) => (
+              <div
+                key={p.title}
+                className="border-t-4 border-navy p-7 px-6 rounded-xl bg-gradient-to-br from-[#FAFBFC] to-white shadow-sm transition-all duration-300 hover:-translate-y-1.5 hover:shadow-lg hover:border-amber"
+              >
+                <small className="block font-bold text-amber mb-3 text-[13px] uppercase tracking-widest">
+                  {p.weeks}
+                </small>
+                <h3 className="text-3xl font-serif mb-3 text-navy">{p.title}</h3>
+                <p className="m-0 text-mut leading-relaxed">{p.text}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="py-30 bg-gradient-to-br from-slate to-[#E8EEF4] animate-fadeIn" id="contact">
+        <div className="max-w-[1200px] mx-auto px-8">
+          <div className="flex flex-wrap items-center justify-between gap-10 py-14 px-12 bg-white rounded-2xl shadow-lg">
+            <div>
+              <h2 className="text-4xl font-serif mb-4 text-navy">See BioShift on your site</h2>
+              <p className="m-0 text-mut text-lg max-w-[580px] leading-relaxed">
+                Tell us about your workforce and locations, and we will walk you through a live demo.
+              </p>
+            </div>
+            <a
+              href={mail}
+              className="inline-block px-7 py-3.5 rounded-lg font-semibold text-[15px] bg-gradient-to-br from-navy to-navy-light text-white shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md active:translate-y-0 relative overflow-hidden group"
+            >
+              <span className="relative z-10">Request a demo</span>
+              <div className="absolute inset-0 bg-gradient-to-br from-white/15 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <footer className="max-w-[1200px] mx-auto px-8 flex flex-wrap justify-between gap-4 py-12 text-sm text-mut border-t border-line">
+        <span>© 2026 BioShift. All rights reserved.</span>
+        <span>{CONTACT_EMAIL}</span>
+      </footer>
+    </>
+  );
+}
