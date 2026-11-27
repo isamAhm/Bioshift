@@ -1,21 +1,31 @@
+"use client";
+
+import { useState } from "react";
 import { Navbar } from "@/components/Navbar";
 import { HeroSection } from "@/components/HeroSection";
 import { DashboardWindow } from "@/components/DashboardWindow";
+import { DemoModal } from "@/components/DemoModal";
+import { CompaniesSlider } from "@/components/CompaniesSlider";
 import { Icon } from "@/components/Icon";
 import content from "./content.json";
 
-const CONTACT_EMAIL = "hello@example.com";
+const CONTACT_EMAIL_1 = "henok3095@gmail.com";
+const CONTACT_EMAIL_2 = "secondemail@example.com"; // Replace with actual second email
 
 export default function Home() {
-  const mail = `mailto:${CONTACT_EMAIL}`;
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const openModal = () => setIsModalOpen(true);
+  const closeModal = () => setIsModalOpen(false);
 
   return (
     <>
-      <Navbar />
+      <Navbar onRequestDemo={openModal} />
+      <DemoModal isOpen={isModalOpen} onClose={closeModal} />
 
       {/* Main Content with top padding for fixed navbar */}
       <div className="pt-28 max-w-[1200px] mx-auto px-8" id="top">
-        <HeroSection />
+        <HeroSection onRequestDemo={openModal} />
         <DashboardWindow />
       </div>
 
@@ -146,21 +156,37 @@ export default function Home() {
                 Tell us about your workforce and locations, and we will walk you through a live demo.
               </p>
             </div>
-            <a
-              href={mail}
-              className="inline-block px-7 py-3.5 rounded-lg font-semibold text-[15px] bg-gradient-to-br from-navy to-navy-light text-white shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md active:translate-y-0 relative overflow-hidden group"
+            <button
+              onClick={openModal}
+              className="inline-block px-7 py-3.5 rounded-lg font-semibold text-[15px] bg-gradient-to-br from-navy to-navy-light text-white shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md active:translate-y-0 relative overflow-hidden group cursor-pointer border-none"
             >
               <span className="relative z-10">Request a demo</span>
               <div className="absolute inset-0 bg-gradient-to-br from-white/15 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
-            </a>
+            </button>
           </div>
         </div>
       </section>
 
+      {/* Companies Slider Section */}
+      <CompaniesSlider />
+
       {/* Footer */}
       <footer className="max-w-[1200px] mx-auto px-8 flex flex-wrap justify-between gap-4 py-12 text-sm text-mut border-t border-line">
         <span>© 2026 BioShift. All rights reserved.</span>
-        <span>{CONTACT_EMAIL}</span>
+        <div className="flex items-center gap-6">
+          <a 
+            href={`mailto:${CONTACT_EMAIL_1}`}
+            className="hover:text-amber transition-colors duration-200"
+          >
+            {CONTACT_EMAIL_1}
+          </a>
+          <a 
+            href={`mailto:${CONTACT_EMAIL_2}`}
+            className="hover:text-amber transition-colors duration-200"
+          >
+            {CONTACT_EMAIL_2}
+          </a>
+        </div>
       </footer>
     </>
   );

@@ -104,8 +104,8 @@ export async function POST(request: Request) {
         const { data, error } = await resend.emails.send({
             from: fromEmail,
             to: [
-                "isam.ahmedh8@gmail.com",
                 "henok3095@gmail.com",
+                "secondemail@example.com",  // Replace with actual second email
             ],
             replyTo: email.trim(),
             subject: `New BioShift Demo Request - ${name.trim()}`,
