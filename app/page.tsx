@@ -24,9 +24,14 @@ export default function Home() {
       <DemoModal isOpen={isModalOpen} onClose={closeModal} />
 
       {/* Main Content with top padding for fixed navbar */}
-      <div className="pt-28 max-w-[1200px] mx-auto px-8" id="top">
-        <HeroSection onRequestDemo={openModal} />
-        <DashboardWindow />
+      <div className="pt-28" id="top">
+        <div className="max-w-[1200px] mx-auto px-8">
+          <HeroSection onRequestDemo={openModal} />
+        </div>
+        {/* Dashboard - hidden on mobile, visible on tablet and above */}
+        <div className="hidden md:block max-w-[1200px] mx-auto px-0 md:px-8">
+          <DashboardWindow />
+        </div>
       </div>
       {/* Companies Slider Section */}
       <CompaniesSlider />

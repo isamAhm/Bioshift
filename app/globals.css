@@ -153,20 +153,108 @@
     0% {
       transform: translateX(0);
     }
+
     100% {
       transform: translateX(-50%);
     }
   }
 
   .animate-scroll {
-    animation: scroll 30s linear infinite;
+    animation: scroll 20s linear infinite;
+  }
+
+  /* Faster animation on mobile */
+  @media (max-width: 768px) {
+    .animate-scroll {
+      animation: scroll 10s linear infinite;
+    }
   }
 
   .animate-scroll:hover {
     animation-play-state: paused;
   }
 
+  /* Dashboard scaling wrapper - scales down proportionally on smaller screens */
+  .dashboard-scale-wrapper {
+    width: 100%;
+    transform-origin: top center;
+  }
+
+  /* Scale down on tablets */
+  @media (max-width: 1024px) {
+    .dashboard-scale-wrapper {
+      transform: scale(0.85);
+    }
+  }
+
+  /* Scale down more on mobile landscape */
+  @media (max-width: 768px) {
+    .dashboard-scale-wrapper {
+      transform: scale(0.7);
+    }
+  }
+
+  /* Scale down even more on mobile portrait */
+  @media (max-width: 640px) {
+    .dashboard-scale-wrapper {
+      transform: scale(0.55);
+    }
+  }
+
+  /* Extra small screens */
+  @media (max-width: 480px) {
+    .dashboard-scale-wrapper {
+      transform: scale(0.45);
+    }
+  }
+
+  /* Tiny screens */
+  @media (max-width: 375px) {
+    .dashboard-scale-wrapper {
+      transform: scale(0.4);
+    }
+  }
+
   .animate-fadeInScale {
     animation: fadeInScale 0.8s ease-out;
+  }
+}
+
+/* Add this to your globals.css */
+
+@keyframes marquee {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+
+  to {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+.marquee-track {
+  animation: marquee 40s linear infinite;
+  /* desktop speed */
+  will-change: transform;
+}
+
+/* Mobile: faster, since the logos are smaller and there are more per screen */
+@media (max-width: 767px) {
+  .marquee-track {
+    animation-duration: 50s;
+  }
+}
+
+/* Pause on hover (only on devices that actually have hover) */
+@media (hover: hover) {
+  .marquee-wrapper:hover .marquee-track {
+    animation-play-state: paused;
+  }
+}
+
+/* Respect users who prefer reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .marquee-track {
+    animation-duration: 120s;
   }
 }
