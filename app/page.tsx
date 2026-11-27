@@ -28,6 +28,8 @@ export default function Home() {
         <HeroSection onRequestDemo={openModal} />
         <DashboardWindow />
       </div>
+      {/* Companies Slider Section */}
+      <CompaniesSlider />
 
       {/* Comparison Section */}
       <section className="py-30 border-t border-line relative animate-fadeIn">
@@ -167,20 +169,19 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Companies Slider Section */}
-      <CompaniesSlider />
+
 
       {/* Footer */}
       <footer className="max-w-[1200px] mx-auto px-8 flex flex-wrap justify-between gap-4 py-12 text-sm text-mut border-t border-line">
         <span>© 2026 BioShift. All rights reserved.</span>
         <div className="flex items-center gap-6">
-          <a 
+          <a
             href={`mailto:${CONTACT_EMAIL_1}`}
             className="hover:text-amber transition-colors duration-200"
           >
             {CONTACT_EMAIL_1}
           </a>
-          <a 
+          <a
             href={`mailto:${CONTACT_EMAIL_2}`}
             className="hover:text-amber transition-colors duration-200"
           >
