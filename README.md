@@ -19,6 +19,16 @@ A modern, animated landing page for BioShift - a biometric workforce attendance 
 npm install
 ```
 
+### Configure EmailJS (Required)
+The contact form uses EmailJS. Follow the setup guide:
+```bash
+# See detailed instructions in EMAILJS_SETUP.md
+cp .env.local.example .env.local
+# Then edit .env.local with your EmailJS credentials
+```
+
+📖 **[Complete EmailJS Setup Guide →](./EMAILJS_SETUP.md)**
+
 ### Development Server
 ```bash
 npm run dev
@@ -41,23 +51,30 @@ npm start
 - **Styling**: Tailwind CSS v4
 - **Language**: TypeScript
 - **Fonts**: Newsreader (serif) + Public Sans (sans-serif)
-- **Email**: Resend API integration
+- **Email**: EmailJS (client-side email service)
 
 ## 📁 Project Structure
 
 ```
 bioshift-landing/
 ├── app/
-│   ├── api/
-│   │   └── demo/
-│   │       └── route.ts          # Demo request API endpoint
 │   ├── content.json               # Page content data
 │   ├── globals.css                # Tailwind + custom animations
 │   ├── layout.tsx                 # Root layout with fonts
 │   └── page.tsx                   # Main landing page
+├── components/
+│   ├── DemoModal.tsx              # Demo request form (EmailJS)
+│   ├── DashboardWindow.tsx        # Interactive dashboard mockup
+│   ├── HeroSection.tsx            # Hero section component
+│   ├── Navbar.tsx                 # Sticky navigation
+│   ├── Icon.tsx                   # Icon components
+│   └── Logo.tsx                   # Logo component
+├── .env.local                     # Environment variables (not in git)
+├── .env.local.example             # Example env file
 ├── postcss.config.js              # PostCSS configuration
 ├── package.json                   # Dependencies
 ├── tsconfig.json                  # TypeScript config
+├── EMAILJS_SETUP.md               # EmailJS configuration guide
 ├── TAILWIND_MIGRATION.md          # Tailwind migration guide
 └── CHANGES_SUMMARY.md             # Recent changes
 ```
@@ -141,9 +158,23 @@ module.exports = {
 
 ## 📧 Contact Form
 
-The demo request button links to `mailto:hello@example.com`. Update this in:
-- `app/page.tsx` - Change `CONTACT_EMAIL` constant
-- `app/api/demo/route.ts` - Update email sending logic (if using)
+The demo request form uses **EmailJS** for client-side email sending. This works perfectly with Vercel subdomains and doesn't require a custom domain.
+
+### Setup Required
+1. Create a free EmailJS account at [emailjs.com](https://www.emailjs.com)
+2. Follow the step-by-step guide in **[EMAILJS_SETUP.md](./EMAILJS_SETUP.md)**
+3. Add your credentials to `.env.local`
+4. Restart the dev server
+
+### Environment Variables
+```bash
+NEXT_PUBLIC_EMAILJS_SERVICE_ID=your_service_id
+NEXT_PUBLIC_EMAILJS_TEMPLATE_ID=your_template_id
+NEXT_PUBLIC_EMAILJS_PUBLIC_KEY=your_public_key
+```
+
+### Deploying to Vercel
+Add the same environment variables in your Vercel project settings under **Environment Variables**.
 
 ## 🐛 Troubleshooting
 

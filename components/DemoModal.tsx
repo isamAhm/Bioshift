@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, FormEvent } from "react";
+import emailjs from "@emailjs/browser";
 import { Icon } from "./Icon";
 
 interface DemoModalProps {
@@ -25,22 +26,51 @@ export function DemoModal({ isOpen, onClose }: DemoModalProps) {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setError("");
+
+    // Basic spam protection (honeypot)
+    if (formData.website) {
+      setIsSuccess(true);
+      return;
+    }
+
+    // Validate required fields
+    if (!formData.name.trim() || !formData.email.trim() || !formData.message.trim()) {
+      setError("Please complete all required fields.");
+      return;
+    }
+
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email.trim())) {
+      setError("Please enter a valid email address.");
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {
-      const response = await fetch("/api/demo", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      });
+      // Get EmailJS configuration from environment variables
+      const serviceId = process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID;
+      const templateId = process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID;
+      const publicKey = process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY;
 
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || "Something went wrong");
+      if (!serviceId || !templateId || !publicKey) {
+        throw new Error("Email service is not configured. Please contact support.");
       }
+
+      // Send email using EmailJS
+      await emailjs.send(
+        serviceId,
+        templateId,
+        {
+          from_name: formData.name.trim(),
+          from_email: formData.email.trim(),
+          company: formData.company.trim() || "Not provided",
+          phone: formData.phone.trim() || "Not provided",
+          message: formData.message.trim(),
+        },
+        publicKey
+      );
 
       setIsSuccess(true);
       setFormData({
@@ -52,7 +82,8 @@ export function DemoModal({ isOpen, onClose }: DemoModalProps) {
         website: "",
       });
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Something went wrong. Please try again.");
+      console.error("EmailJS error:", err);
+      setError("Failed to send your request. Please try again or contact us directly.");
     } finally {
       setIsSubmitting(false);
     }

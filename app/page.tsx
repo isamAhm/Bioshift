@@ -9,8 +9,8 @@ import { CompaniesSlider } from "@/components/CompaniesSlider";
 import { Icon } from "@/components/Icon";
 import content from "./content.json";
 
-const CONTACT_EMAIL_1 = "henok3095@gmail.com";
-const CONTACT_EMAIL_2 = "secondemail@example.com"; // Replace with actual second email
+const CONTACT_EMAIL_1 = "isam.ahmedh8@gmail.com";
+const CONTACT_EMAIL_2 = "henok3095@gmail.com"; // Replace with actual second email
 
 export default function Home() {
   const [isModalOpen, setIsModalOpen] = useState(false);

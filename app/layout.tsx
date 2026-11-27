@@ -12,6 +12,11 @@ export const metadata: Metadata = {
   title: "BioShift | Biometric workforce attendance and time management",
   description:
     "BioShift connects ZKTeco fingerprint, face and card terminals to a real-time dashboard so attendance, shifts and leave stay accurate and auditable.",
+  icons: {
+    icon: "/logo.png",
+    shortcut: "/logo.png",
+    apple: "/logo.png",
+  },
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
